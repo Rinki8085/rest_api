@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+const port = process.env.PORT||8010;
 const mongo = require('mongodb');
 const MongoClient = mongo.MongoClient;
 //const mongourl = "mongodb://localhost:27017"
@@ -20,8 +20,8 @@ app.get('/location', (req, res) => {
   })
 })
 
-app.get('/Hotel', (req, res) => {
-  db.collection("Hotelj").find().toArray((err,result) => {
+app.get('/hotel', (req, res) => {
+  db.collection("hotel").find().toArray((err,result) => {
     if(err) throw err;
     res.send(result)
   })
