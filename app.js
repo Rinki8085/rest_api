@@ -27,6 +27,34 @@ app.get('/hotel', (req, res) => {
   })
 })
 
+app.get('/hotel',(req,res) =>{
+  var query = {}
+  if(req.query.city_id){
+      query={state_id:Number(req.query.city_id)}
+      console.log(query)
+  }else if(req.query.bookingtype){
+      query={"mealTypes.mealtype_id":req.query.bookingtype}
+  }
+  db.collection('hotel').find(query).toArray((err,result)=>{
+      if(err) throw err;
+      res.send(result)
+  })
+})
+
+app.get('/roomtype',(req,res) => {
+  db.collection("roomtype").find().toArray((err,result) => {
+    if(err) throw err;
+    res.send(result)
+  })
+})
+
+app.get('/bookingtype',(req,res) => {
+  db.collection("bookingtype").find().toArray((err,result) => {
+    if(err) throw err;
+    res.send(result)
+  })
+})
+
 MongoClient.connect(mongourl,(err,client) => {
   if(err) console.log("Error while connecting");
   db = client.db("2nd_Project");
@@ -34,3 +62,6 @@ MongoClient.connect(mongourl,(err,client) => {
     console.log(`listening port number ${port}`)
   })
 })
+
+//live api of project
+//https://cherish-your-journey-api.herokuapp.com
