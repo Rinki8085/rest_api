@@ -60,26 +60,31 @@ app.get('/filter/:tripType',(req,res) => {
   if(req.query.sortkey){
       sort = {cost:req.query.sortkey}
   }
+
   if(req.query.skip && req.query.limit){
       skip = Number(req.query.skip);
       limit = Number(req.query.limit)
   }
   
-  if(req.query.roomtype && req.query.lcost && req.query.hcost){
+  if(req.query.roomType && req.query.lcost && req.query.hcost){
       query={
           $and:[{cost:{$gt:Number(req.query.lcost),$lt:Number(req.query.hcost)}}],
-          "roomtype.roomtype_id":req.query.roomType,
+          "roomType.roomtype_id":req.query.roomType,
           "tripType.triptype_id":tripType
       }
   }
-  else if(req.query.roomtype){
-      query = {"roomtype.roomType_id":roomtype,"tripType.triptype_id":req.query.tripType }
+  
+  else if(req.query.roomType){
+      query = {"roomType.roomtype_id":req.query.roomType,"tripType.triptype_id":tripType }
   }
+
   else if(req.query.lcost && req.query.hcost){
       var lcost = Number(req.query.lcost);
       var hcost = Number(req.query.hcost);
-      query={$and:[{cost:{$gt:lcost,$lt:hcost}}],"roomtype.roomType_id":roomtype}
+      query={$and:[{cost:{$gt:lcost,$lt:hcost}}],"tripType.triptype_id":tripType}
+      console.log(query)
   }
+
   db.collection('hotel').find(query).sort(sort).skip(skip).limit(limit).toArray((err,result)=>{
       if(err) throw err;
       res.send(result)
