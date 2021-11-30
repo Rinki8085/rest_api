@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
 
 //location
 app.get('/location', (req, res) => {
+
   db.collection("location").find().toArray((err,result) => {
     if(err) throw err;
     res.send(result)
