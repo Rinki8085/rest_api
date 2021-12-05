@@ -23,8 +23,15 @@ app.get('/', (req, res) => {
 
 //location
 app.get('/location', (req, res) => {
-
   db.collection("location").find().toArray((err,result) => {
+    if(err) throw err;
+    res.send(result)
+  })
+})
+
+// tripType
+app.get('/tripType', (req, res) => {
+  db.collection("tripType").find().toArray((err,result) => {
     if(err) throw err;
     res.send(result)
   })
@@ -34,18 +41,14 @@ app.get('/location', (req, res) => {
 //list of hotel with respect to cityId
 app.get('/hotel',(req,res) =>{
   var query = {}
-  
   if(req.query.cityid){
       query={"city_id":Number(req.query.cityid)}
-      
   }else if(req.query.triptype_id){
-      query={"tripType.triptype_id":Number(req.query.triptype_id)}
-      
+      query={"tripType.triptype_id":Number(req.query.triptype_id)} 
   }
   db.collection('hotel').find(query).toArray((err,result)=>{
       if(err) throw err;
-      res.send(result)
-      
+      res.send(result) 
   })
 })
 
@@ -53,7 +56,6 @@ app.get('/filter/:tripType',(req,res) => {
   var sort = {cost:1}
   var skip = 0;
   var limit = 1000000000000;
-
   var tripType = req.params.tripType;
   var query = {"tripType.triptype_id":tripType};
   console.log(query)
@@ -61,12 +63,10 @@ app.get('/filter/:tripType',(req,res) => {
   if(req.query.sortkey){
       sort = {cost:req.query.sortkey}
   }
-
   if(req.query.skip && req.query.limit){
       skip = Number(req.query.skip);
       limit = Number(req.query.limit)
   }
-  
   if(req.query.roomType && req.query.lcost && req.query.hcost){
       query={
           $and:[{cost:{$gt:Number(req.query.lcost),$lt:Number(req.query.hcost)}}],
@@ -74,18 +74,15 @@ app.get('/filter/:tripType',(req,res) => {
           "tripType.triptype_id":tripType
       }
   }
-  
   else if(req.query.roomType){
       query = {"roomType.roomtype_id":req.query.roomType,"tripType.triptype_id":tripType }
   }
-
   else if(req.query.lcost && req.query.hcost){
       var lcost = Number(req.query.lcost);
       var hcost = Number(req.query.hcost);
       query={$and:[{cost:{$gt:lcost,$lt:hcost}}],"tripType.triptype_id":tripType}
       console.log(query)
   }
-
   db.collection('hotel').find(query).sort(sort).skip(skip).limit(limit).toArray((err,result)=>{
       if(err) throw err;
       res.send(result)
@@ -93,11 +90,64 @@ app.get('/filter/:tripType',(req,res) => {
 })
 
 app.get('/quicksearch',(req,res) =>{
-  db.collection('tripType').find().toArray((err,result)=>{
+  db.collection('roomType').find().toArray((err,result)=>{
       if(err) throw err;
       res.send(result)
   })
 })
+
+// place order 
+app.post('/BookPlace',(req,res) => {
+  console.log(req.body);
+  db.collection('orders').insertMany(req.body,(err,result) => {
+      if(err) throw err;
+      res.send("Order Placed")
+  })
+})
+
+app.get('/viewBooking',(req,res) => {
+  var query = {}
+  if(req.query.email){
+      query = {email:req.query.email}
+  }
+  db.collection('bookings').find(query).toArray((err,result)=>{
+      if(err) throw err;
+      res.send(result)
+  })
+})
+
+app.get('/viewBooking/:id',(req,res) => {
+  var id = mongo.ObjectId(req.params.id);
+  db.collection('bookings').find({_id:id}).toArray((err,result)=>{
+      if(err) throw err;
+      res.send(result)
+  })
+})
+
+app.delete('/deletebooking',(req,res) => {
+  db.collection('bookings').remove({},(err,result)=>{
+      if(err) throw err;
+      res.send(result)
+  })
+})
+
+app.put('/updateBooking/:id',(req,res) => {
+  var id = Number(req.params.id);
+  var status = req.body.status?req.body.status:"pending";
+  db.collection('orders').updateOne(
+      {id:id},
+      {
+          $set:{
+              "date":req.body.date,
+              "bank_status":req.body.bank_status,
+              "bank":req.body.bank,
+              "status":status
+          }
+      }
+  )
+  res.send('data updated')
+})
+
 
 MongoClient.connect(mongourl,(err,client) => {
   if(err) console.log("Error while connecting");
