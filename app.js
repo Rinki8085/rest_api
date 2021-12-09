@@ -43,8 +43,21 @@ app.get('/hotel',(req,res) =>{
   var query = {}
   if(req.query.cityid){
       query={"city_id":Number(req.query.cityid)}
-  }else if(req.query.triptype_id){
-      query={"tripType.triptype_id":Number(req.query.triptype_id)} 
+  }else if(req.query.roomtype_id){
+      query={"roomType.roomtype_id":req.query.roomtype_id} 
+      console.log(query)
+  }
+  db.collection('hotel').find(query).toArray((err,result)=>{
+      if(err) throw err;
+      res.send(result) 
+  })
+})
+
+app.get('/hotel',(req,res) =>{
+  var query = {}
+  if(req.query.roomtype_id){
+      query={"tripType.triptype_id":req.query.triptype_id} 
+      console.log(query)
   }
   db.collection('hotel').find(query).toArray((err,result)=>{
       if(err) throw err;
