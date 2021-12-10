@@ -57,11 +57,19 @@ app.get('/hotel',(req,res) =>{
   var query = {}
   if(req.query.roomtype_id){
       query={"tripType.triptype_id":req.query.triptype_id} 
-      console.log(query)
   }
   db.collection('hotel').find(query).toArray((err,result)=>{
       if(err) throw err;
       res.send(result) 
+  })
+})
+
+app.get('/hotel/:id',(req,res) => {
+  var id = Number(req.params.id)
+  console.log(id)
+  db.collection('hotel').find({id:id}).toArray((err,result) => {
+    if(err) throw err;
+    res.send(result)
   })
 })
 
