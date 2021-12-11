@@ -70,6 +70,7 @@ app.get('/hotel/:id',(req,res) => {
   db.collection('hotel').find({id:id}).toArray((err,result) => {
     if(err) throw err;
     res.send(result)
+    console.log(result)
   })
 })
 
@@ -154,7 +155,7 @@ app.delete('/deletebooking',(req,res) => {
 
 app.put('/updateBooking/:id',(req,res) => {
   var id = Number(req.params.id);
-  var status = req.body.status?req.body.status:"pending";
+  var status = req.body.status?req.body.status:"Booked";
   db.collection('orders').updateOne(
       {id:id},
       {
@@ -168,7 +169,6 @@ app.put('/updateBooking/:id',(req,res) => {
   )
   res.send('data updated')
 })
-
 
 MongoClient.connect(mongourl,(err,client) => {
   if(err) console.log("Error while connecting");
