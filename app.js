@@ -121,7 +121,7 @@ app.get('/quicksearch',(req,res) =>{
 // place order 
 app.post('/BookPlace',(req,res) => {
   console.log(req.body);
-  db.collection('orders').insertMany(req.body,(err,result) => {
+  db.collection('bookings').insertMany(req.body,(err,result) => {
       if(err) throw err;
       res.send("Order Placed")
   })
@@ -156,7 +156,7 @@ app.delete('/deletebooking',(req,res) => {
 app.put('/updateBooking/:id',(req,res) => {
   var id = Number(req.params.id);
   var status = req.body.status?req.body.status:"Booked";
-  db.collection('orders').updateOne(
+  db.collection('bookings').updateOne(
       {id:id},
       {
           $set:{
