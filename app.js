@@ -74,12 +74,12 @@ app.get('/hotel/:id',(req,res) => {
   })
 })
 
-app.get('/filter/:tripType',(req,res) => {
+app.get('/filter/:rating',(req,res) => {
   var sort = {cost:1}
   var skip = 0;
   var limit = 1000000000000;
-  var tripType = req.params.tripType;
-  var query = {"tripType.triptype_id":tripType};
+  var rating = Number(req.params.rating);
+  var query = {"rating":rating};
   console.log(query)
 
   if(req.query.sortkey){
