@@ -89,9 +89,10 @@ app.get('/filter/:rating',(req,res) => {
       skip = Number(req.query.skip);
       limit = Number(req.query.limit)
   }
+  var tripType = req.params.rating;
   if(req.query.roomType && req.query.lcost && req.query.hcost){
       query={
-          $and:[{cost:{$gt:Number(req.query.lcost),$lt:Number(req.query.hcost)}}],
+          $and:[{price:{$gt:Number(req.query.lcost),$lt:Number(req.query.hcost)}}],
           "roomType.roomtype_id":req.query.roomType,
           "tripType.triptype_id":tripType
       }
@@ -102,7 +103,8 @@ app.get('/filter/:rating',(req,res) => {
   else if(req.query.lcost && req.query.hcost){
       var lcost = Number(req.query.lcost);
       var hcost = Number(req.query.hcost);
-      query={$and:[{cost:{$gt:lcost,$lt:hcost}}],"tripType.triptype_id":tripType}
+      console.log(lcost,hcost)
+      query={$and:[{price:{$gt:lcost,$lt:hcost}}],"tripType.triptype_id":tripType}
       console.log(query)
   }
   db.collection('hotel').find(query).sort(sort).skip(skip).limit(limit).toArray((err,result)=>{
